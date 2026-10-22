@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Match Game - Enhanced</title>
+  <link rel="stylesheet" href="styles-enhanced.css">
+</head>
+<body>
+  <!-- Welcome Screen -->
+  <div id="welcome-screen" class="screen active">
+    <h1>🎮 Memory Match</h1>
+    <p class="subtitle">Enhanced Edition</p>
+    <form id="username-form">
+      <input 
+        type="text" 
+        id="username-input" 
+        placeholder="Enter your name"
+        minlength="2" 
+        maxlength="20" 
+        required
+        autocomplete="off">
+      <button type="submit">Start Playing</button>
+    </form>
+    <p id="welcome-message"></p>
+  </div>
+
+  <!-- Level Select Screen -->
+  <div id="level-select-screen" class="screen">
+    <h2>Choose Difficulty</h2>
+    
+    <!-- Challenge Mode Selector -->
+    <div class="mode-selector-container">
+      <label for="mode-selector">Game Mode:</label>
+      <select id="mode-selector" class="mode-select">
+        <option value="classic">Classic</option>
+        <option value="timeAttack">Time Attack ⏱️</option>
+        <option value="limitedMoves">Limited Moves 🎯</option>
+        <option value="memoryMaster">Memory Master 🧠</option>
+      </select>
+    </div>
+    
+    <div class="level-cards">
+      <div class="level-card" data-difficulty="easy">
+        <h3>Easy</h3>
+        <p>4×4 Grid (8 pairs)</p>
+        <span class="card-count">16 cards</span>
+      </div>
+      <div class="level-card" data-difficulty="medium">
+        <h3>Medium</h3>
+        <p>4×6 Grid (12 pairs)</p>
+        <span class="card-count">24 cards</span>
+      </div>
+      <div class="level-card" data-difficulty="hard">
+        <h3>Hard</h3>
+        <p>6×6 Grid (18 pairs)</p>
+        <span class="card-count">36 cards</span>
+      </div>
+    </div>
+    
+    <div class="menu-buttons">
+      <button id="view-leaderboard-btn" class="secondary-btn">🏆 Leaderboard</button>
+      <button id="view-stats-btn" class="secondary-btn">📊 Statistics</button>
+    </div>
+  </div>
+
+  <!-- Game Screen -->
+  <div id="game-screen" class="screen">
+    <div class="game-header">
+      <button id="back-to-levels" class="icon-btn">← Back</button>
+      <h2 id="difficulty-display"></h2>
+      <button id="pause-btn" class="icon-btn">⏸️</button>
+    </div>
+    
+    <div class="mode-indicator">
+      Mode: <span id="mode-display">Classic</span>
+    </div>
+    
+    <div class="stats-panel">
+      <div class="stat-item">
+        <span class="stat-label">Moves</span>
+        <span class="stat-value">
+          <span id="moves-count">0</span><span id="move-limit"></span>
+        </span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Time</span>
+        <span id="time-display" class="stat-value">00:00</span>
+        <span id="freeze-indicator" style="display:none; color: var(--secondary-color);"></span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Score</span>
+        <span id="score-display" class="stat-value">10000</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Combo</span>
+        <span id="combo-display" class="stat-value">-</span>
+      </div>
+    </div>
+    
+    <!-- Power-Ups Panel -->
+    <div class="powerups-panel">
+      <button id="hint-btn" class="powerup-btn" title="Reveal a matching pair (H)">
+        💡 Hint <span id="hints-count" class="powerup-count">3</span>
+      </button>
+      <button id="freeze-btn" class="powerup-btn" title="Freeze timer for 10s (F)">
+        ❄️ Freeze <span id="freeze-count" class="powerup-count">2</span>
+      </button>
+    </div>
+    
+    <div id="game-board" class="game-board"></div>
+    
+    <div class="game-tips">
+      <p>💡 Press <kbd>P</kbd> to pause | <kbd>H</kbd> for hint | <kbd>F</kbd> to freeze time</p>
+    </div>
+  </div>
+
+  <!-- Results Screen -->
+  <div id="results-screen" class="screen">
+    <h2 id="results-title">Congratulations!</h2>
+    <div class="results-stats">
+      <p>Difficulty: <span id="result-difficulty"></span></p>
+      <p>Final Score: <span id="result-score" class="highlight-score"></span></p>
+      <p>Moves: <span id="result-moves"></span></p>
+      <p>Time: <span id="result-time"></span></p>
+      <p>Max Combo: <span id="result-combo"></span></p>
+    </div>
+    <p id="performance-message" class="performance-msg"></p>
+    <p id="leaderboard-message" class="leaderboard-msg"></p>
+    <div class="results-actions">
+      <button id="play-again-btn">Play Again</button>
+      <button id="choose-level-btn" class="secondary-btn">Choose Level</button>
+      <button id="view-results-leaderboard" class="secondary-btn">View Leaderboard</button>
+    </div>
+  </div>
+
+  <!-- Leaderboard Screen -->
+  <div id="leaderboard-screen" class="screen">
+    <h2>🏆 Leaderboard</h2>
+    <div class="difficulty-tabs">
+      <button class="tab-btn active" data-difficulty="easy">Easy</button>
+      <button class="tab-btn" data-difficulty="medium">Medium</button>
+      <button class="tab-btn" data-difficulty="hard">Hard</button>
+    </div>
+    <div class="leaderboard-container">
+      <table id="leaderboard-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Player</th>
+            <th>Score</th>
+            <th>Moves</th>
+            <th>Time</th>
+            <th>Combo</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body">
+          <tr>
+            <td colspan="6" class="no-scores">No scores yet. Be the first!</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="leaderboard-actions">
+      <button id="back-from-leaderboard" class="secondary-btn">Back</button>
+      <button id="clear-leaderboard" class="danger-btn">Clear Leaderboard</button>
+    </div>
+  </div>
+
+  <script src="game-enhanced.js"></script>
+</body>
+</html>
